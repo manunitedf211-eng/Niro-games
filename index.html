@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WaseBet Gaming Hub - Mini App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg: #070c12;
+            --surface: #101822;
+            --surface-2: #172230;
+            --border: #233246;
+            --green: #16a34a;
+            --green-bright: #22c55e;
+            --gold: #f59e0b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-bottom: 84px;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(7, 12, 18, 0.94);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand-row { display: flex; align-items: center; gap: 8px; }
+        .brand-badge {
+            background: var(--green-bright);
+            color: #052e16;
+            font-weight: 900;
+            font-size: 0.72rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+        .brand-title { font-weight: 900; font-size: 0.98rem; letter-spacing: 0.4px; }
+        .top-right-btns { display: flex; align-items: center; gap: 7px; }
+        .bal-chip {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--green-bright);
+            cursor: pointer;
+        }
+        .reg-pill {
+            background: var(--green);
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.74rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .container { max-width: 520px; margin: 0 auto; padding: 12px; }
+
+        /* PROMO BANNER */
+        .promo-banner {
+            background: linear-gradient(125deg, #064e3b 0%, #0f172a 55%, #1e293b 100%);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .promo-banner h2 { font-size: 1.15rem; font-weight: 900; color: #fff; line-height: 1.25; }
+        .promo-banner span { color: #4ade80; }
+        .promo-banner p { font-size: 0.72rem; color: #cbd5e1; margin-top: 4px; }
+        .play-now-btn {
+            background: var(--green-bright);
+            color: #052e16;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 0.75rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* QUICK CATEGORY STRIP */
+        .quick-cats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .q-cat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 9px 6px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 700;
+            position: relative;
+        }
+        .q-cat-card i { display: block; font-size: 1.1rem; color: var(--green-bright); margin-bottom: 4px; }
+        .hot-tag {
+            position: absolute;
+            top: -6px;
+            right: 6px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.56rem;
+            font-weight: 900;
+            padding: 1px 5px;
+            border-radius: 6px;
+        }
+
+        /* FILTER PILLS & SEARCH */
+        .filter-row {
+            display: flex;
+            gap: 7px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        .f-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .f-pill.active {
+            background: var(--green);
+            border-color: var(--green-bright);
+            color: #fff;
+        }
+        .search-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 9px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .search-bar input {
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.82rem;
+            outline: none;
+        }
+
+        /* SECTIONS & 3-COL GAME GRID */
+        .sec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 14px 0 9px;
+        }
+        .sec-header h3 { font-size: 0.9rem; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+        .view-all-btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 3px 9px;
+            border-radius: 8px;
+            font-size: 0.66rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .games-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 9px;
+        }
+        .game-tile {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.14s ease;
+        }
+        .game-tile:active { transform: scale(0.96); }
+        .game-art {
+            height: 78px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: #fff;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        }
+        .game-art i { font-size: 1.35rem; margin-bottom: 4px; }
+        .game-name-lbl {
+            padding: 6px 7px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: var(--surface-2);
+        }
+
+        /* GAME PLAY MODAL */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 12, 0.86);
+            z-index: 500;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-box {
+            width: 100%;
+            max-width: 520px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-radius: 22px 22px 0 0;
+            padding: 18px;
+        }
+        .bet-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.85rem;
+            margin: 10px 0;
+            outline: none;
+        }
+        .keno-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin: 10px 0;
+        }
+        .keno-num {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px 0;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.78rem;
+            cursor: pointer;
+        }
+        .keno-num.picked { background: var(--green-bright); color: #052e16; }
+
+        /* BOTTOM NAV */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0b111a;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 10px;
+            z-index: 200;
+        }
+        .b-nav-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-family: inherit;
+            font-size: 0.68rem;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+        }
+        .b-nav-btn.active { color: var(--green-bright); }
+    </style>
+</head>
+<body>
+    <!-- TOP BAR -->
+    <header class="top-bar">
+        <div class="brand-row">
+            <span class="brand-badge">HUB</span>
+            <span class="brand-title">WASEBET GAMES</span>
+        </div>
+        <div class="top-right-btns">
+            <div class="bal-chip" onclick="openWalletAlert()"><i class="fas fa-coins"></i> <span id="user-coins">1,000</span> ETB</div>
+            <button class="reg-pill" id="user-badge-btn" onclick="openWalletAlert()">Player</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- HERO BANNER -->
+        <div class="promo-banner">
+            <div>
+                <h2>FAST <span>KENO</span> & CRASH</h2>
+                <p>Instant rounds • Slots • Originals • Fast Play</p>
+            </div>
+            <button class="play-now-btn" onclick="launchGame('Fast Keno', 'Keno', '#16a34a')">Play Now</button>
+        </div>
+
+        <!-- QUICK CATEGORY CARDS -->
+        <div class="quick-cats">
+            <div class="q-cat-card" onclick="selectCategory('Hot')">
+                <span class="hot-tag">HOT</span>
+                <i class="fas fa-fire"></i>Hot
+            </div>
+            <div class="q-cat-card" onclick="selectCategory('Crash Games')">
+                <i class="fas fa-plane-departure"></i>Crash
+            </div>
+            <div class="q-cat-card" onclick="selectCategory('Popular Slots')">
+                <span class="hot-tag">TOP</span>
+                <i class="fas fa-gem"></i>Slots
+            </div>
+            <div class="q-cat-card" onclick="selectCategory('Originals')">
+                <i class="fas fa-crown"></i>Originals
+            </div>
+        </div>
+
+        <!-- FILTER PILLS -->
+        <div class="filter-row" id="category-pills"></div>
+
+        <!-- SEARCH BAR -->
+        <div class="search-bar">
+            <i class="fas fa-search" style="color:var(--muted);"></i>
+            <input type="text" id="game-search-inp" placeholder="Find a game (Keno, Aviator, Gates, Mines...)" oninput="renderGames()">
+        </div>
+
+        <!-- DYNAMIC SECTIONS -->
+        <div id="games-sections-area"></div>
+    </main>
+
+    <!-- GAME LAUNCHER MODAL -->
+    <div class="modal-bg" id="game-modal">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3 id="modal-game-title" style="font-weight:900; font-size:1rem;">Fast Keno</h3>
+                    <small id="modal-game-cat" style="color:var(--green-bright); font-weight:700;">Keno and Spins</small>
+                </div>
+                <button onclick="closeGameModal()" style="background:var(--surface-2); color:#fff; border:none; width:32px; height:32px; border-radius:50%; cursor:pointer;">✕</button>
+            </div>
+
+            <div id="keno-picker-box" class="keno-grid"></div>
+
+            <input type="number" class="bet-input" id="bet-amount-inp" value="20" min="5" placeholder="Stake amount (ETB)">
+            <button class="play-now-btn" style="width:100%; padding:12px; font-size:0.88rem;" onclick="placeRoundBet()">
+                <i class="fas fa-play"></i> Start Round
+            </button>
+            <div id="round-result-box" style="margin-top:10px; font-size:0.8rem; font-weight:700; text-align:center; min-height:22px;"></div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-bar">
+        <button class="b-nav-btn active" onclick="selectCategory('All')"><i class="fas fa-th-large"></i><span>Games</span></button>
+        <button class="b-nav-btn" onclick="selectCategory('Crash Games')"><i class="fas fa-rocket"></i><span>Crash</span></button>
+        <button class="b-nav-btn" onclick="selectCategory('Popular Slots')"><i class="fas fa-dice"></i><span>Slots</span></button>
+        <button class="b-nav-btn" onclick="openWalletAlert()"><i class="fas fa-wallet"></i><span>Wallet</span></button>
+    </nav>
+
+    <script>
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+        if (tg) { try { tg.expand(); tg.ready(); } catch(e){} }
+
+        let uid = "8797798511";
+        let uname = "@Niro_X12";
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            uid = String(tg.initDataUnsafe.user.id);
+            uname = tg.initDataUnsafe.user.username ? "@" + tg.initDataUnsafe.user.username : (tg.initDataUnsafe.user.first_name || "Player");
+        }
+
+        let balance = parseFloat(localStorage.getItem("hub_bal_" + uid) || "1000");
+        let activeCat = "All";
+        let currentGame = null;
+        let pickedKeno = [];
+
+        const CATEGORIES = ["All", "Hot", "Popular", "Crash Games", "Popular Slots", "Keno and Spins", "Originals", "Pragmatic Play"];
+
+        const GAMES_DATA = [
+            { name: "Fast Keno", cat: "Hot", color: "#15803d", icon: "fa-braille" },
+            { name: "Lucky Spin Pro", cat: "Hot", color: "#b45309", icon: "fa-dharmachakra" },
+            { name: "Golden Keno", cat: "Hot", color: "#0369a1", icon: "fa-th" },
+            { name: "Aviator Jet", cat: "Crash Games", color: "#be123c", icon: "fa-plane" },
+            { name: "Crash Rocket", cat: "Crash Games", color: "#7c3aed", icon: "fa-rocket" },
+            { name: "Turbo Line", cat: "Crash Games", color: "#0f766e", icon: "fa-bolt" },
+            { name: "Gates of Gold", cat: "Popular Slots", color: "#9333ea", icon: "fa-crown" },
+            { name: "Sweet Bonanza", cat: "Popular Slots", color: "#db2777", icon: "fa-candy-cane" },
+            { name: "Wolf Quest", cat: "Popular Slots", color: "#1d4ed8", icon: "fa-paw" },
+            { name: "Classic Keno", cat: "Keno and Spins", color: "#047857", icon: "fa-border-all" },
+            { name: "Spin & Win", cat: "Keno and Spins", color: "#d97706", icon: "fa-sync" },
+            { name: "Dice Roll", cat: "Keno and Spins", color: "#4338ca", icon: "fa-dice" },
+            { name: "Mines Grid", cat: "Originals", color: "#0e7490", icon: "fa-bomb" },
+            { name: "Plinko Drop", cat: "Originals", color: "#b91c1c", icon: "fa-sort-amount-down" },
+            { name: "High Low", cat: "Originals", color: "#4d7c0f", icon: "fa-exchange-alt" },
+            { name: "Sugar Rush", cat: "Pragmatic Play", color: "#c026d3", icon: "fa-sparkles" },
+            { name: "Big Bass", cat: "Pragmatic Play", color: "#0284c7", icon: "fa-fish" },
+            { name: "Starlight", cat: "Pragmatic Play", color: "#6d28d9", icon: "fa-star" }
+        ];
+
+        function updateBalUI() {
+            document.getElementById("user-coins").innerText = balance.toLocaleString(undefined, { maximumFractionDigits: 2 });
+            document.getElementById("user-badge-btn").innerText = uname;
+            localStorage.setItem("hub_bal_" + uid, String(balance));
+        }
+
+        function renderPills() {
+            const box = document.getElementById("category-pills");
+            box.innerHTML = CATEGORIES.map(c =>
+                `<button class="f-pill ${activeCat === c ? "active" : ""}" onclick="selectCategory('${c}')">${c}</button>`
+            ).join("");
+        }
+
+        function selectCategory(cat) {
+            activeCat = cat;
+            renderPills();
+            renderGames();
+        }
+
+        function renderGames() {
+            const q = document.getElementById("game-search-inp").value.trim().toLowerCase();
+            const area = document.getElementById("games-sections-area");
+            const filtered = GAMES_DATA.filter(g =>
+                (activeCat === "All" || g.cat === activeCat) &&
+                (g.name.toLowerCase().includes(q) || g.cat.toLowerCase().includes(q))
+            );
+
+            const groups = {};
+            filtered.forEach(g => {
+                if (!groups[g.cat]) groups[g.cat] = [];
+                groups[g.cat].push(g);
+            });
+
+            let html = "";
+            Object.keys(groups).forEach(catName => {
+                html += `
+                    <div class="sec-header">
+                        <h3>${catName}</h3>
+                        <button class="view-all-btn" onclick="selectCategory('${catName}')">View All</button>
+                    </div>
+                    <div class="games-grid-3">
+                `;
+                groups[catName].forEach(g => {
+                    html += `
+                        <div class="game-tile" onclick="launchGame('${g.name}', '${g.cat}', '${g.color}')">
+                            <div class="game-art" style="background:linear-gradient(135deg, ${g.color}, #0f172a);">
+                                <i class="fas ${g.icon}"></i>
+                                <span>${g.name.split(" ")[0]}</span>
+                            </div>
+                            <div class="game-name-lbl">${g.name}</div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            });
+
+            area.innerHTML = html || `<div style="text-align:center; padding:24px; color:var(--muted);">No games found.</div>`;
+        }
+
+        function buildKenoGrid() {
+            const box = document.getElementById("keno-picker-box");
+            pickedKeno = [];
+            let html = "";
+            for (let i = 1; i <= 15; i++) {
+                html += `<button type="button" class="keno-num" id="kn-${i}" onclick="toggleKenoPick(${i})">${i}</button>`;
+            }
+            box.innerHTML = html;
+        }
+
+        function toggleKenoPick(num) {
+            const btn = document.getElementById("kn-" + num);
+            if (pickedKeno.includes(num)) {
+                pickedKeno = pickedKeno.filter(x => x !== num);
+                btn.classList.remove("picked");
+            } else {
+                if (pickedKeno.length >= 5) return;
+                pickedKeno.push(num);
+                btn.classList.add("picked");
+            }
+        }
+
+        function launchGame(name, cat, color) {
+            currentGame = { name, cat, color };
+            document.getElementById("modal-game-title").innerText = name;
+            document.getElementById("modal-game-cat").innerText = cat;
+            document.getElementById("round-result-box").innerText = "";
+            buildKenoGrid();
+            document.getElementById("game-modal").style.display = "flex";
+        }
+
+        function closeGameModal() {
+            document.getElementById("game-modal").style.display = "none";
+        }
+
+        function placeRoundBet() {
+            const stake = parseFloat(document.getElementById("bet-amount-inp").value);
+            const resBox = document.getElementById("round-result-box");
+            if (isNaN(stake) || stake <= 0 || stake > balance) {
+                resBox.style.color = "#ef4444";
+                resBox.innerText = "Invalid stake or insufficient balance.";
+                return;
+            }
+            balance -= stake;
+            const mult = (Math.random() * 2.2 + 0.5).toFixed(2);
+            const won = parseFloat(mult) >= 1.0;
+            if (won) {
+                const payout = stake * parseFloat(mult);
+                balance += payout;
+                resBox.style.color = "#22c55e";
+                resBox.innerText = `${currentGame.name}: ${mult}x Win! +${payout.toFixed(2)} ETB`;
+            } else {
+                resBox.style.color = "#f59e0b";
+                resBox.innerText = `${currentGame.name}: Round ended at ${mult}x (-${stake} ETB)`;
+            }
+            updateBalUI();
+        }
+
+        function openWalletAlert() {
+            alert(`Player: ${uname} (ID: ${uid})\nBalance: ${balance.toFixed(2)} ETB`);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateBalUI();
+            renderPills();
+            renderGames();
+        });
+    </script>
+</body>
+</html>
